@@ -1,0 +1,5 @@
+**/*.d.ts
+**/*.rs.bk
+/target
+Cargo.lock
+dist/wasm_custom_allocator_test*
