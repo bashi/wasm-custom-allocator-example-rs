@@ -1,8 +1,11 @@
 [package]
-name = "wasm-custom-allocator-test"
+name = "wasm-custom-allocator-example"
 version = "0.1.0"
 authors = ["Kenichi Ishibashi <ishibashi.kenichi@gmail.com>"]
 edition = "2018"
+
+[profile.release]
+lto = true
 
 [lib]
 crate-type = ["cdylib"]

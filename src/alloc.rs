@@ -8,7 +8,7 @@ use std::ptr::null_mut;
 const MEMORY_INDEX: u32 = 0;
 const PAGE_SIZE: usize = 65536; // 64KB
 
-unsafe fn alloc_pages(num_pages: usize) -> NonNull<u8> {
+unsafe fn grow_pages(num_pages: usize) -> NonNull<u8> {
     let num_pages = wasm32::memory_grow(MEMORY_INDEX, num_pages);
     if num_pages == usize::max_value() {
         process::abort();
@@ -98,7 +98,7 @@ impl Heap {
         if bytes_to_alloc >= remaining {
             let diff = bytes_to_alloc - remaining;
             let num_pages_to_alloc = (diff / PAGE_SIZE) + 1;
-            let mem = alloc_pages(num_pages_to_alloc);
+            let mem = grow_pages(num_pages_to_alloc);
             self.mem.replace(mem);
             self.size += num_pages_to_alloc * PAGE_SIZE;
         }
@@ -111,10 +111,16 @@ impl Heap {
 }
 
 pub struct CustomAlloc {
+    // Using UnsafeCell to have internal mutability.
+    // This is not thread-safe but OK for now as Rust doesn't support multi
+    // threading in wasm yet.
     heap: UnsafeCell<Heap>,
 }
 
-// Need to implement Sync manually as UnsafeCell only implements Send.
+// Need to implement Sync explicitly as UnsafeCell only implements Send.
+// The compiler requires Sync/Send for a type that is used as a shared static
+// variable. CustomAlloc is used as a shared static variable with the
+// #[global_allocator] attribute in client code.
 unsafe impl Sync for CustomAlloc {}
 
 impl CustomAlloc {

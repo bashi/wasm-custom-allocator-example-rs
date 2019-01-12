@@ -17,3 +17,27 @@ pub fn add_values(arr: &[i32]) -> i32 {
 pub fn get_memory_size() -> usize {
     alloc::get_memory_size()
 }
+
+#[wasm_bindgen]
+pub fn levenshtein_distance(s: &str, t: &str) -> usize {
+    use std::cmp::min;
+    let (n, m) = (s.len(), t.len());
+    let mut dp = vec![vec![0; m + 1]; n + 1];
+    for i in 0..(n + 1) {
+        dp[i][0] = i
+    }
+    for j in 0..(m + 1) {
+        dp[0][j] = j
+    }
+
+    for (i, a) in s.chars().enumerate() {
+        for (j, b) in t.chars().enumerate() {
+            dp[i + 1][j + 1] = if a == b {
+                dp[i][j]
+            } else {
+                min(min(dp[i][j + 1], dp[i + 1][j]), dp[i][j]) + 1
+            };
+        }
+    }
+    dp[n][m]
+}
