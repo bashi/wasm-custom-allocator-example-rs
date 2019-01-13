@@ -14,6 +14,11 @@ pub fn add_values(arr: &[i32]) -> i32 {
 }
 
 #[wasm_bindgen]
+pub fn to_uppercase(s: &str) -> String {
+    s.to_uppercase()
+}
+
+#[wasm_bindgen]
 pub fn get_memory_size() -> usize {
     alloc::get_memory_size()
 }

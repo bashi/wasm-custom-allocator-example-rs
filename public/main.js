@@ -18,10 +18,20 @@ function testAllocateManyArrays() {
     }
     const sum = wasm.add_values(arr);
     if (sum !== expected) {
-      throw new Error(`Unexpected result: ${sum} !== ${expected}`);
+      throw new Error(`Unexpected result: ${sum} != ${expected}`);
     }
   }
   dumpResult("OK: testAllocateManyArrays");
+}
+
+function testToUppercase() {
+  const s = "helloworld";
+  const expected = "HELLOWORLD";
+  const actual = wasm.to_uppercase(s);
+  if (actual !== expected) {
+    throw new Error(`Unexpected result: ${actual} != ${expected}`);
+  }
+  dumpResult("OK: testToUppercase");
 }
 
 function testLevenshteinDistance() {
@@ -43,5 +53,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   await init();
 
   testAllocateManyArrays();
+  testToUppercase();
   testLevenshteinDistance();
 });
